@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hidden Pictures Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="game-container">
+    <div class="header">
+	  <img src="Temp/Title_HP.png" alt="Title" class="header-title">
+	  <img src="Temp/MornRush.png" alt="Subtitle" class="header-subtitle">
+	  <div id="timer">⏱ 03:00</div>
+	</div>
+
+    <div class="content">
+      <div class="left-panel">
+        <img src="Temp/GameBg.png" alt="Puzzle" id="puzzle-image" />
+        <div id="start-overlay">
+          <button id="start-button">Start Game</button>
+        </div>
+        </div>
+
+      <div class="right-panel">
+        <h2>Find These:</h2>
+        <div id="object-list" class="icon-list">
+          </div>
+      </div>
+    </div>
+    
+    <div id="end-screen" class="hidden">
+      <h2 id="end-message"></h2>
+      <div class="score-display">
+        <p>Your Score: <span id="score-value"></span></p>
+      </div>
+      <button id="play-again-button">Play Again</button>
+    </div>
+  </div>  
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="script.js"></script>
+  <audio id="bg-music" src="Temp/Music/CatchyPuzzleGame.mp3" loop></audio>
+
+</body>
+</html>
