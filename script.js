@@ -191,25 +191,26 @@ function launchMagicEffect(x, y) {
 }
 
 function resetGame() {
-  clearInterval(timer); // 🧹 Clear old timer
+  // Add this line to stop any ongoing confetti from the previous game
+  if (confettiAnimationId) {
+	  cancelAnimationFrame(confettiAnimationId);
+	  confettiAnimationId = null;
+	}
 
-  // ✅ STOP ANY CONFETTI ANIMATION LOOP
-  if (confettiLoopId !== null) {
-    cancelAnimationFrame(confettiLoopId);
-    confettiLoopId = null;
-  }
-
-  // 🧼 Hide end screen and reset variables
-  document.getElementById('end-screen').classList.add('hidden');
+  const endScreen = document.getElementById('end-screen');
+  endScreen.classList.add('hidden');
+  
+  // Reset variables
   score = 0;
   timeLeft = 180;
+  clearInterval(timer); // Stop any existing timer
 
-  // 🧱 Rebuild puzzle and object list
+  // Re-build the game board
   setupGame();
 
-  // 🕒 Restart timer and game state
-  updateTimer();
-  gameActive = true;
+  // Start the new timer
+  updateTimer(); // Update display immediately
+  gameActive = true; 
   timer = setInterval(updateTimer, 1000);
 }
 
@@ -234,6 +235,7 @@ startButton.addEventListener('click', () => {
 });
 
 playAgainButton.addEventListener('click', resetGame);
+
 
 
 
