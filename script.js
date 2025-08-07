@@ -26,7 +26,7 @@ let timer;
 let gameActive = false;
 let confettiLoopId = null;
 
-const BASE_WIDTH = 500;
+const BASE_WIDTH = 750;
 
 function scalePuzzleWrapper() {
   const wrapper = document.querySelector('.puzzle-wrapper');
@@ -34,6 +34,13 @@ function scalePuzzleWrapper() {
   const scale = container.offsetWidth / BASE_WIDTH;
   wrapper.style.transform = `scale(${scale})`;
 }
+
+window.onload = () => {
+  setupGame();           // sets up hotspots and icons
+  scalePuzzleWrapper();  // scales entire wrapper
+};
+
+window.onresize = scalePuzzleWrapper;
 
 function setupGame() {
   const list = document.getElementById('object-list');
@@ -219,3 +226,4 @@ startButton.addEventListener('click', () => {
 
 playAgainButton.addEventListener('click', resetGame);
 window.addEventListener('resize', scalePuzzleWrapper);
+
