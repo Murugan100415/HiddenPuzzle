@@ -114,10 +114,11 @@ function checkWin() {
 }
 
 function launchConfetti() {
-  const duration = 2 * 1000;
+  const duration = 2000;
   const end = Date.now() + duration;
 
   function frame() {
+    // Burst from bottom corners
     confetti({
       particleCount: 5,
       angle: 60,
@@ -131,12 +132,16 @@ function launchConfetti() {
       origin: { x: 1, y: 1 }
     });
 
+    // Loop if still within duration
     if (Date.now() < end) {
-      confettiAnimationId = requestAnimationFrame(frame);
+      confettiLoopId = requestAnimationFrame(frame);
+    } else {
+      confettiLoopId = null; // ✅ stop tracking once finished
     }
   }
 
-  frame(); // start the loop
+  // Start the loop
+  frame();
 }
 
 function revealColoredIcon(obj) {
@@ -188,11 +193,6 @@ function launchMagicEffect(x, y) {
 function resetGame() {
   // Add this line to stop any ongoing confetti from the previous game
   if (confettiAnimationId) {
-     	cancelAnimationFrame(confettiAnimationId);
-	confettiAnimationId = null;
-  }
-  
-  if (confettiAnimationId) {
 	  cancelAnimationFrame(confettiAnimationId);
 	  confettiAnimationId = null;
 	}
@@ -235,4 +235,5 @@ startButton.addEventListener('click', () => {
 });
 
 playAgainButton.addEventListener('click', resetGame);
+
 
