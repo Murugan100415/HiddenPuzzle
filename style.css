@@ -53,13 +53,25 @@ body, html {
 }
 
 .left-panel {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.puzzle-wrapper {
   position: relative;
-  display: inline-block;
-  border: 2px solid black;
+  width: 500px; /* base width used for coordinates */
+  height: auto;
+  transform-origin: top left;
+}
+
+.hotspot, .answer-icon, .smoke-effect {
+  position: absolute;
 }
 
 #puzzle-image {
-  width: 725px;
+  width: 100%;
   height: auto;
   display: block;
 }
@@ -250,3 +262,4 @@ body, html {
     max-width: 150px;
   }
 }
+
