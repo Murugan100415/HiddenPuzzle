@@ -54,26 +54,27 @@ body, html {
 
 .left-panel {
   width: 100%;
-  overflow: hidden;
   display: flex;
   justify-content: center;
+  overflow: hidden;
 }
-
 .puzzle-wrapper {
   position: relative;
-  width: 750px; /* base width used for coordinates */
-  height: auto;
+  width: 720px; /* <== change to your game’s design width */
+  height: 1000px; /* approximate height of your full puzzle */
   transform-origin: top left;
 }
-
-.hotspot, .answer-icon, .smoke-effect {
-  position: absolute;
-}
-
 #puzzle-image {
   width: 100%;
   height: auto;
   display: block;
+  pointer-events: none;
+}
+
+.hotspot,
+.answer-icon,
+.smoke-effect {
+  position: absolute;
 }
 
 .right-panel {
@@ -262,5 +263,3 @@ body, html {
     max-width: 150px;
   }
 }
-
-
