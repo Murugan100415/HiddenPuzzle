@@ -24,7 +24,7 @@ let score = 0;
 let timeLeft = 180;
 let timer;
 let gameActive = false;
-let confettiLoopId = null;
+let confettiAnimationId = null;
 
 const BASE_WIDTH = 750;
 
@@ -34,13 +34,6 @@ function scalePuzzleWrapper() {
   const scale = container.offsetWidth / BASE_WIDTH;
   wrapper.style.transform = `scale(${scale})`;
 }
-
-window.onload = () => {
-  setupGame();           // sets up hotspots and icons
-  scalePuzzleWrapper();  // scales entire wrapper
-};
-
-window.onresize = scalePuzzleWrapper;
 
 function setupGame() {
   const list = document.getElementById('object-list');
@@ -131,19 +124,29 @@ function checkWin() {
 }
 
 function launchConfetti() {
-  const duration = 2000;
+  const duration = 2 * 1000;
   const end = Date.now() + duration;
 
   function frame() {
-    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0, y: 1 } });
-    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1, y: 1 } });
+    confetti({
+      particleCount: 5,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 1 }
+    });
+    confetti({
+      particleCount: 5,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 1 }
+    });
+
     if (Date.now() < end) {
-      confettiLoopId = requestAnimationFrame(frame);
-    } else {
-      confettiLoopId = null;
+      confettiAnimationId = requestAnimationFrame(frame);
     }
   }
-  frame();
+
+  frame(); // start the loop
 }
 
 function revealColoredIcon(obj) {
@@ -188,9 +191,9 @@ function launchMagicEffect(x, y) {
 }
 
 function resetGame() {
-  if (confettiLoopId) {
-    cancelAnimationFrame(confettiLoopId);
-    confettiLoopId = null;
+  if (confettiAnimationId) {
+    cancelAnimationFrame(confettiAnimationId);
+    confettiAnimationId = null;
   }
 
   const endScreen = document.getElementById('end-screen');
@@ -212,7 +215,12 @@ const gameContainer = document.querySelector('.game-container');
 const backgroundMusic = document.getElementById('bg-music');
 const playAgainButton = document.getElementById('play-again-button');
 
-setupGame();
+window.onload = () => {
+  setupGame();
+  scalePuzzleWrapper();
+};
+
+window.addEventListener('resize', scalePuzzleWrapper);
 
 startButton.addEventListener('click', () => {
   startOverlay.classList.add('hidden');
@@ -225,5 +233,3 @@ startButton.addEventListener('click', () => {
 });
 
 playAgainButton.addEventListener('click', resetGame);
-window.addEventListener('resize', scalePuzzleWrapper);
-
