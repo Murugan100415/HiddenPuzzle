@@ -61,7 +61,7 @@ body, html {
 
 .puzzle-wrapper {
   position: relative;
-  width: 500px; /* base width used for coordinates */
+  width: 750px; /* base width used for coordinates */
   height: auto;
   transform-origin: top left;
 }
@@ -262,4 +262,5 @@ body, html {
     max-width: 150px;
   }
 }
+
 
