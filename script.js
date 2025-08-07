@@ -23,6 +23,8 @@ const objectsToFind = centerHotspots.map(obj => ({
 let score = 0;
 let timeLeft = 180;
 let timer;
+let gameActive = false;
+let confettiAnimationId = null;
 
 function setupGame() {
   const list = document.getElementById('object-list');
@@ -80,11 +82,12 @@ function updateTimer() {
 }
 
 function endGame() {
+  if (!gameActive) return;
+  gameActive = false;
   clearInterval(timer);
   const endScreen = document.getElementById('end-screen');
   const endMessage = document.getElementById('end-message');
   
-  // Reset any special win classes first
   endMessage.classList.remove('win-message');
   
   endScreen.classList.remove('hidden');
@@ -93,7 +96,7 @@ function endGame() {
   
   if (score === objectsToFind.length) {
     message = "Kola Mass Sarae!";
-    endMessage.classList.add('win-message'); // Add special class for win text
+    endMessage.classList.add('win-message');
     launchConfetti();
   } else if (score >= 11) {
     message = "Good Job!";
@@ -104,23 +107,36 @@ function endGame() {
 }
 
 function checkWin() {
+  if (!gameActive) return;
   if (score === objectsToFind.length) {
     endGame();
   }
 }
 
 function launchConfetti() {
-  const duration = 3 * 1000;
+  const duration = 2 * 1000;
   const end = Date.now() + duration;
-  (function frame() {
-    // Confetti from left
-    confetti({ particleCount: 7, angle: 60, spread: 55, origin: { x: 0, y: 1 }, zIndex: 9999 }); // Changed to 9999
-    // Confetti from right
-    confetti({ particleCount: 7, angle: 120, spread: 55, origin: { x: 1, y: 1 }, zIndex: 9999 }); // Changed to 9999
+
+  function frame() {
+    confetti({
+      particleCount: 5,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 1 }
+    });
+    confetti({
+      particleCount: 5,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 1 }
+    });
+
     if (Date.now() < end) {
-      requestAnimationFrame(frame);
+      confettiAnimationId = requestAnimationFrame(frame);
     }
-  })();
+  }
+
+  frame(); // start the loop
 }
 
 function revealColoredIcon(obj) {
@@ -167,8 +183,17 @@ function launchMagicEffect(x, y) {
   });
 }
 
-// --- NEW FUNCTION TO RESET THE GAME ---
 function resetGame() {
+  // Add this line to stop any ongoing confetti from the previous game
+  if (typeof confetti !== "undefined") {
+    confetti.reset();
+  }
+  
+  if (confettiAnimationId) {
+	  cancelAnimationFrame(confettiAnimationId);
+	  confettiAnimationId = null;
+	}
+
   const endScreen = document.getElementById('end-screen');
   endScreen.classList.add('hidden');
   
@@ -182,6 +207,7 @@ function resetGame() {
 
   // Start the new timer
   updateTimer(); // Update display immediately
+  gameActive = true; 
   timer = setInterval(updateTimer, 1000);
 }
 
@@ -193,18 +219,16 @@ const gameContainer = document.querySelector('.game-container');
 const backgroundMusic = document.getElementById('bg-music');
 const playAgainButton = document.getElementById('play-again-button');
 
-// Initial setup of the board
 setupGame();
 
-// Add listener to the start button
 startButton.addEventListener('click', () => {
   startOverlay.classList.add('hidden');
   gameContainer.classList.remove('blurry');
   if (backgroundMusic) {
     backgroundMusic.play().catch(error => console.error("Music playback failed:", error));
   }
+  gameActive = true;
   timer = setInterval(updateTimer, 1000);
 });
 
-// Add listener to the "Play Again" button
 playAgainButton.addEventListener('click', resetGame);
