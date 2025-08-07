@@ -141,6 +141,8 @@ function launchConfetti() {
 
 function revealColoredIcon(obj) {
   const imageContainer = document.querySelector('.left-panel');
+
+  // Smoke effect
   const smoke = document.createElement('div');
   smoke.classList.add('smoke-effect');
   smoke.style.backgroundImage = 'url(Temp/smoke-effect.gif)';
@@ -149,6 +151,7 @@ function revealColoredIcon(obj) {
   smoke.style.top = (obj.y + obj.h / 2 - smokeSize / 2) + 'px';
   imageContainer.appendChild(smoke);
 
+  // Colored icon
   const iconFile = iconMap[obj.name] || obj.name;
   const img = document.createElement('img');
   img.src = `Temp/Ans/${iconFile}C.png`;
@@ -157,15 +160,14 @@ function revealColoredIcon(obj) {
   img.style.height = obj.h + 'px';
   img.style.top = obj.y + 'px';
   img.style.left = obj.x + 'px';
+
   imageContainer.appendChild(img);
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      img.classList.add('reveal');
-      launchMagicEffect(obj.x + obj.w / 2, obj.y + obj.h / 2);
-    });
-  });
-  
+  // ✅ Force layout sync
+  void img.offsetWidth;
+  img.classList.add('reveal'); // Trigger the CSS animation
+  launchMagicEffect(obj.x + obj.w / 2, obj.y + obj.h / 2);
+
   setTimeout(() => {
     smoke.remove();
   }, 1000);
@@ -185,8 +187,9 @@ function launchMagicEffect(x, y) {
 
 function resetGame() {
   // Add this line to stop any ongoing confetti from the previous game
-  if (typeof confetti !== "undefined") {
-    confetti.reset();
+  if (confettiAnimationId) {
+     	cancelAnimationFrame(confettiAnimationId);
+	confettiAnimationId = null;
   }
   
   if (confettiAnimationId) {
@@ -232,3 +235,4 @@ startButton.addEventListener('click', () => {
 });
 
 playAgainButton.addEventListener('click', resetGame);
+
