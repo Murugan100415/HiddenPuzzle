@@ -24,13 +24,22 @@ let score = 0;
 let timeLeft = 180;
 let timer;
 let gameActive = false;
-let confettiAnimationId = null;
+let confettiLoopId = null;
+
+const BASE_WIDTH = 500;
+
+function scalePuzzleWrapper() {
+  const wrapper = document.querySelector('.puzzle-wrapper');
+  const container = document.querySelector('.left-panel');
+  const scale = container.offsetWidth / BASE_WIDTH;
+  wrapper.style.transform = `scale(${scale})`;
+}
 
 function setupGame() {
   const list = document.getElementById('object-list');
-  const imageContainer = document.querySelector('.left-panel');
+  const wrapper = document.querySelector('.puzzle-wrapper');
   list.innerHTML = ''; 
-  imageContainer.querySelectorAll('.hotspot, .answer-icon').forEach(el => el.remove());
+  wrapper.querySelectorAll('.hotspot, .answer-icon, .smoke-effect').forEach(el => el.remove());
 
   objectsToFind.forEach((obj) => {
     const hotspot = document.createElement('div');
@@ -40,7 +49,7 @@ function setupGame() {
     hotspot.style.width = `${obj.w}px`;
     hotspot.style.height = `${obj.h}px`;
     hotspot.dataset.name = obj.name;
-    imageContainer.appendChild(hotspot);
+    wrapper.appendChild(hotspot);
 
     hotspot.addEventListener('click', () => {
       if (hotspot.classList.contains('found')) return;
@@ -69,6 +78,8 @@ function setupGame() {
     iconContainer.appendChild(tickMark);
     list.appendChild(iconContainer);
   });
+
+  scalePuzzleWrapper();
 }
 
 function updateTimer() {
@@ -87,13 +98,12 @@ function endGame() {
   clearInterval(timer);
   const endScreen = document.getElementById('end-screen');
   const endMessage = document.getElementById('end-message');
-  
+
   endMessage.classList.remove('win-message');
-  
   endScreen.classList.remove('hidden');
   document.getElementById('score-value').textContent = score;
   let message = '';
-  
+
   if (score === objectsToFind.length) {
     message = "Kola Mass Sarae!";
     endMessage.classList.add('win-message');
@@ -118,45 +128,27 @@ function launchConfetti() {
   const end = Date.now() + duration;
 
   function frame() {
-    // Burst from bottom corners
-    confetti({
-      particleCount: 5,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0, y: 1 }
-    });
-    confetti({
-      particleCount: 5,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1, y: 1 }
-    });
-
-    // Loop if still within duration
+    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0, y: 1 } });
+    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1, y: 1 } });
     if (Date.now() < end) {
       confettiLoopId = requestAnimationFrame(frame);
     } else {
-      confettiLoopId = null; // ✅ stop tracking once finished
+      confettiLoopId = null;
     }
   }
-
-  // Start the loop
   frame();
 }
 
 function revealColoredIcon(obj) {
-  const imageContainer = document.querySelector('.left-panel');
-
-  // Smoke effect
+  const wrapper = document.querySelector('.puzzle-wrapper');
   const smoke = document.createElement('div');
   smoke.classList.add('smoke-effect');
   smoke.style.backgroundImage = 'url(Temp/smoke-effect.gif)';
   const smokeSize = 150;
   smoke.style.left = (obj.x + obj.w / 2 - smokeSize / 2) + 'px';
   smoke.style.top = (obj.y + obj.h / 2 - smokeSize / 2) + 'px';
-  imageContainer.appendChild(smoke);
+  wrapper.appendChild(smoke);
 
-  // Colored icon
   const iconFile = iconMap[obj.name] || obj.name;
   const img = document.createElement('img');
   img.src = `Temp/Ans/${iconFile}C.png`;
@@ -165,12 +157,10 @@ function revealColoredIcon(obj) {
   img.style.height = obj.h + 'px';
   img.style.top = obj.y + 'px';
   img.style.left = obj.x + 'px';
+  wrapper.appendChild(img);
 
-  imageContainer.appendChild(img);
-
-  // ✅ Force layout sync
   void img.offsetWidth;
-  img.classList.add('reveal'); // Trigger the CSS animation
+  img.classList.add('reveal');
   launchMagicEffect(obj.x + obj.w / 2, obj.y + obj.h / 2);
 
   setTimeout(() => {
@@ -191,29 +181,22 @@ function launchMagicEffect(x, y) {
 }
 
 function resetGame() {
-  // Add this line to stop any ongoing confetti from the previous game
-  if (confettiAnimationId) {
-	  cancelAnimationFrame(confettiAnimationId);
-	  confettiAnimationId = null;
-	}
+  if (confettiLoopId) {
+    cancelAnimationFrame(confettiLoopId);
+    confettiLoopId = null;
+  }
 
   const endScreen = document.getElementById('end-screen');
   endScreen.classList.add('hidden');
-  
-  // Reset variables
+
   score = 0;
   timeLeft = 180;
-  clearInterval(timer); // Stop any existing timer
-
-  // Re-build the game board
+  clearInterval(timer);
   setupGame();
-
-  // Start the new timer
-  updateTimer(); // Update display immediately
-  gameActive = true; 
+  updateTimer();
+  gameActive = true;
   timer = setInterval(updateTimer, 1000);
 }
-
 
 // --- GAME START LOGIC ---
 const startButton = document.getElementById('start-button');
@@ -235,7 +218,4 @@ startButton.addEventListener('click', () => {
 });
 
 playAgainButton.addEventListener('click', resetGame);
-
-
-
-
+window.addEventListener('resize', scalePuzzleWrapper);
